@@ -50,11 +50,10 @@ pipeline {
         stage('Deploy to AKS') {
             steps {
                 sh '''
-                echo "📂 Listing workspace files"
-                ls -R
-
+                export KUBECONFIG=/root/.kube/config
+                kubectl get nodes
                 kubectl apply -f k8s/deployment.yaml
-                kubectl apply -f service.yaml
+                kubectl apply -f k8s/service.yaml
                 '''
             }
         }
