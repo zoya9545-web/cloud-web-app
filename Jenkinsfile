@@ -19,9 +19,9 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh """
+                sh '''
                 docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG .
-                """
+                '''
             }
         }
 
@@ -32,29 +32,30 @@ pipeline {
                     usernameVariable: 'ACR_USER',
                     passwordVariable: 'ACR_PASS'
                 )]) {
-                    sh """
-                    docker login $ACR_LOGIN_SERVER \
-                    -u $ACR_USER \
-                    -p $ACR_PASS
-                    """
+                    sh '''
+                    docker login $ACR_LOGIN_SERVER -u $ACR_USER -p $ACR_PASS
+                    '''
                 }
             }
         }
 
         stage('Push Image to ACR') {
             steps {
-                sh """
+                sh '''
                 docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$IMAGE_TAG
-                """
+                '''
             }
         }
 
         stage('Deploy to AKS') {
             steps {
-                sh """
+                sh '''
+                echo "📂 Listing workspace files"
+                ls -R
+
                 kubectl apply -f k8s/deployment.yaml
-                kubectl apply -f k8s/service.yaml
-                """
+                kubectl apply -f service.yaml
+                '''
             }
         }
     }
